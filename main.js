@@ -3,21 +3,22 @@ const input = document.querySelector('input');
 const autocompl = document.querySelector('.autocomp');
 const itemsList = document.querySelector('.items-list');
 
-// const debounce = (fn, debounceTime) => {
-//   let timer;
-//   console.log('work');
-//   return function (...args) {
-//     clearTimeout(timer);
-//     const fnCall = () => {
-//       fn.apply(this, args);
-//     };
-//     timer = setTimeout(fnCall, debounceTime);
-//   };
-// };
+const debounce = (fn, debounceTime) => {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    const fnCall = () => {
+      fn.apply(this, args);
+    };
+    timer = setTimeout(fnCall, debounceTime);
+  };
+};
 
-input.addEventListener('keyup', (e) => {
+const debouncedGetRepo = debounce(getRepo, 200);
+
+input.addEventListener('input', (e) => {
   let userData = e.target.value;
-  getRepo(userData);
+  debouncedGetRepo(userData);
   if (!userData) {
     autocompl.innerHTML = '';
   }
@@ -26,7 +27,13 @@ input.addEventListener('keyup', (e) => {
 function getRepo(value) {
   return Promise.resolve().then(async () => {
     return await fetch(`https://api.github.com/search/repositories?q=${value}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+
+        return res.json();
+      })
       .then((repo) => {
         if (repo.items.length === 0) {
           autocompl.innerHTML = ' ';
@@ -39,8 +46,11 @@ function getRepo(value) {
 }
 
 function getInfo(data) {
+  autocompl.innerHTML = '';
+
   let name, star, owners;
   let items = data.items;
+
   let arrName = [];
   for (let el = 0; el < items.length; el++) {
     name = items[el].name;
@@ -52,32 +62,17 @@ function getInfo(data) {
   createList(arrName);
 }
 
-function createList(listName) {
-  let item;
-  let arrName = [];
-  for (let el = 0; el < listName.length; el++) {
-    item = listName[el].name;
-    arrName.push(item);
-    arrName = arrName.sort();
-  }
-  arrName = arrName.map((data) => {
-    return (data = `<li class="autocomp-item">${data}</li>`);
-  });
-  arrName = arrName.join(' ');
-  autocompl.innerHTML = arrName;
+function createList(data) {
+  for (const item of data) {
+    const el = document.createElement('li');
+    el.classList.add('autocomp-item');
+    el.textContent = item.name;
 
-  const itemList = document.querySelectorAll('.autocomp-item');
-
-  for (let el = 0; el < itemList.length; el++) {
-    let element = itemList[el];
-  
-    element.addEventListener('click', (e) => {
-      listName.forEach((el) => {
-        if (el.name === e.target.textContent) {
-          render(el.name, el.owners, el.star);
-        }
-      });
+    el.addEventListener('click', () => {
+      render(item.name, item.owners, item.star);
     });
+
+    autocompl.append(el);
   }
 }
 
