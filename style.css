@@ -30,9 +30,10 @@ body {
 }
 
 .items-list {
+  margin-top: 265px;
   width: 100%;
-  background: #e27beb;
-  border: 1px solid #000000;
+  height: auto;
+  /* border: 1px solid #000000; */
   font-weight: 400;
   font-size: 24px;
   line-height: 28px;
@@ -42,16 +43,19 @@ body {
   padding: 8px 17px;
   display: flex;
   align-items: center;
+  background: #e27beb;
   justify-content: space-between;
   border: 1px solid black;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 28px;
 }
-.item-name {
+.item-name, .item-owner, .item-stars {
   min-width: 200px;
   display: flex;
-  justify-content: start;
   align-items: center;
 }
-.key {
+.name-key, .owner-key, .star-key {
   margin-right: 8px;
 }
 
@@ -60,25 +64,26 @@ body {
   width: 42px;
   height: 42px;
   border: none;
-  background-color: #e27beb;
+  background-color: rgba(255,255,255, 0);
   cursor: pointer;
 }
-.close {
+.delete::after {
+  content: '';
   left: 0;
   position: absolute;
   width: 42px;
   height: 4px;
   background-color: red;
-  transform: rotate(45deg);
+  transform: rotate(-45deg);
 }
-.close::before {
+.delete::before {
   left: 0;
   content: '';
   position: absolute;
   width: 42px;
   height: 4px;
   background-color: red;
-  transform: rotate(90deg);
+  transform: rotate(45deg);
 }
 
 .list-name {
@@ -90,4 +95,32 @@ body {
   font-weight: 400;
   font-size: 30px;
   line-height: 35px;
+  cursor: pointer;
+}
+
+.autocomp {
+  height: 200px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+  overflow-y: hidden;
+  /* opacity: 0; */
+}
+
+.autocomp-item {
+  /* display: none; */
+  top: 100%;
+  width: 492px;
+  background: #e3e3e3;
+  list-style: none;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 36px;
+  border: 2px solid #000000;
+  cursor: pointer;
+}
+
+.autocomp-item:hover {
+  background-color: #65cdf9;
 }
